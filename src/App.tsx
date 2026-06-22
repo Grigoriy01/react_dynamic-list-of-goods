@@ -9,6 +9,7 @@ import { Good } from './types/Good';
 
 export const App: React.FC = () => {
   const [selectedGoods, setSelectedGoods] = useState<Good[]>([]);
+  const [errorLoad, setErrorLoad] = useState<string | null>(null);
 
   return (
     <div className="App">
@@ -17,7 +18,15 @@ export const App: React.FC = () => {
       <button
         type="button"
         data-cy="all-button"
-        onClick={() => getAll().then(data => setSelectedGoods(data))}
+        onClick={() => {
+          setErrorLoad(null);
+
+          getAll()
+            .then(data => setSelectedGoods(data))
+            .catch(() => {
+              setErrorLoad('Failed to load goods. Please try again.');
+            });
+        }}
       >
         Load all goods
       </button>
@@ -25,7 +34,16 @@ export const App: React.FC = () => {
       <button
         type="button"
         data-cy="first-five-button"
-        onClick={() => get5First().then(data => setSelectedGoods(data))}
+        onClick={() => {
+          setErrorLoad(null);
+          get5First()
+            .then(data => setSelectedGoods(data))
+            .catch(() => {
+              setErrorLoad(
+                'Failed to load first-five goods. Please try again.',
+              );
+            });
+        }}
       >
         Load 5 first goods
       </button>
@@ -33,12 +51,21 @@ export const App: React.FC = () => {
       <button
         type="button"
         data-cy="red-button"
-        onClick={() => getRedGoods().then(data => setSelectedGoods(data))}
+        onClick={() => {
+          setErrorLoad(null);
+          getRedGoods()
+            .then(data => setSelectedGoods(data))
+            .catch(() => {
+              setErrorLoad('Failed to load red goods. Please try again.');
+            });
+        }}
       >
         Load red goods
       </button>
 
       <GoodsList goods={selectedGoods} />
+
+      {errorLoad && <p className="error">{errorLoad}</p>}
     </div>
   );
 };
